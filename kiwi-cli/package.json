@@ -45,8 +45,8 @@
     "prettier": "^1.16.4",
     "randomstring": "^1.1.5",
     "slash2": "^2.0.0",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.2.2",
+    "ts-node": "10",
+    "typescript": "4",
     "vue-template-compiler": "^2.6.11"
   }
 }

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sync = void 0;
 /**
  * @author linhuiw
  * @desc 翻译文件
@@ -14,15 +13,15 @@ const fs = require("fs");
 const path = require("path");
 const _ = require("lodash");
 const utils_1 = require("./utils");
-const CONFIG = (0, utils_1.getProjectConfig)();
+const CONFIG = utils_1.getProjectConfig();
 /**
  * 获取中文文案文件的翻译，优先使用已有翻译，若找不到则使用 google 翻译
  * */
 function getTranslations(file, toLang) {
     const translations = {};
     const fileNameWithoutExt = path.basename(file).split('.')[0];
-    const srcLangDir = (0, utils_1.getLangDir)(CONFIG.srcLang);
-    const distLangDir = (0, utils_1.getLangDir)(toLang);
+    const srcLangDir = utils_1.getLangDir(CONFIG.srcLang);
+    const distLangDir = utils_1.getLangDir(toLang);
     const srcFile = path.resolve(srcLangDir, file);
     const distFile = path.resolve(distLangDir, file);
     const { default: texts } = require(srcFile);
@@ -30,7 +29,7 @@ function getTranslations(file, toLang) {
     if (fs.existsSync(distFile)) {
         distTexts = require(distFile).default;
     }
-    (0, utils_1.traverse)(texts, (text, path) => {
+    utils_1.traverse(texts, (text, path) => {
         const key = fileNameWithoutExt + '.' + path;
         const distText = _.get(distTexts, path);
         translations[key] = distText || text;
@@ -42,18 +41,18 @@ function getTranslations(file, toLang) {
  * */
 function writeTranslations(file, toLang, translations) {
     const fileNameWithoutExt = path.basename(file).split('.')[0];
-    const srcLangDir = (0, utils_1.getLangDir)(CONFIG.srcLang);
+    const srcLangDir = utils_1.getLangDir(CONFIG.srcLang);
     const srcFile = path.resolve(srcLangDir, file);
     const { default: texts } = require(srcFile);
     const rst = {};
-    (0, utils_1.traverse)(texts, (text, path) => {
+    utils_1.traverse(texts, (text, path) => {
         const key = fileNameWithoutExt + '.' + path;
         // 使用 setWith 而不是 set，保证 numeric key 创建的不是数组，而是对象
         // https://github.com/lodash/lodash/issues/1316#issuecomment-120753100
         _.setWith(rst, path, translations[key], Object);
     });
     const fileContent = 'export default ' + JSON.stringify(rst, null, 2);
-    const filePath = path.resolve((0, utils_1.getLangDir)(toLang), path.basename(file));
+    const filePath = path.resolve(utils_1.getLangDir(toLang), path.basename(file));
     return new Promise((resolve, reject) => {
         fs.writeFile(filePath, fileContent, err => {
             if (err) {
@@ -82,7 +81,7 @@ function translateFile(file, toLang) {
  * 翻译所有文件
  */
 function sync(callback) {
-    const srcLangDir = (0, utils_1.getLangDir)(CONFIG.srcLang);
+    const srcLangDir = utils_1.getLangDir(CONFIG.srcLang);
     fs.readdir(srcLangDir, (err, files) => {
         if (err) {
             console.error(err);

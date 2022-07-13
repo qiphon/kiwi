@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -52,7 +51,7 @@ commander
     .option('--prefix [prefix]', '指定替换中文文案前缀')
     .parse(process.argv);
 if (commander.init) {
-    (() => __awaiter(void 0, void 0, void 0, function* () {
+    (() => __awaiter(this, void 0, void 0, function* () {
         const result = yield inquirer.prompt({
             type: 'confirm',
             name: 'confirm',
@@ -60,8 +59,8 @@ if (commander.init) {
             message: '项目中是否已存在kiwi相关目录？'
         });
         if (!result.confirm) {
-            spining('初始化项目', () => __awaiter(void 0, void 0, void 0, function* () {
-                (0, init_1.initProject)();
+            spining('初始化项目', () => __awaiter(this, void 0, void 0, function* () {
+                init_1.initProject();
             }));
         }
         else {
@@ -70,8 +69,8 @@ if (commander.init) {
                 name: 'dir',
                 message: '请输入相关目录：'
             });
-            spining('初始化项目', () => __awaiter(void 0, void 0, void 0, function* () {
-                (0, init_1.initProject)(value.dir);
+            spining('初始化项目', () => __awaiter(this, void 0, void 0, function* () {
+                init_1.initProject(value.dir);
             }));
         }
     }))();
@@ -83,64 +82,64 @@ if (commander.import) {
             return false;
         }
         else if (commander.args) {
-            (0, import_1.importMessages)(commander.import, commander.args[0]);
+            import_1.importMessages(commander.import, commander.args[0]);
         }
     });
 }
 if (commander.export) {
     spining('导出未翻译的文案', () => {
         if (commander.export === true && commander.args.length === 0) {
-            (0, export_1.exportMessages)();
+            export_1.exportMessages();
         }
         else if (commander.args) {
-            (0, export_1.exportMessages)(commander.export, commander.args[0]);
+            export_1.exportMessages(commander.export, commander.args[0]);
         }
     });
 }
 if (commander.sync) {
     spining('文案同步', () => {
-        (0, sync_1.sync)();
+        sync_1.sync();
     });
 }
 if (commander.unused) {
     spining('导出未使用的文案', () => {
-        (0, unused_1.findUnUsed)();
+        unused_1.findUnUsed();
     });
 }
 if (commander.mock) {
-    (0, sync_1.sync)(() => __awaiter(void 0, void 0, void 0, function* () {
-        const { pass, origin } = yield (0, utils_1.getTranslateOriginType)();
+    sync_1.sync(() => __awaiter(this, void 0, void 0, function* () {
+        const { pass, origin } = yield utils_1.getTranslateOriginType();
         if (pass) {
             const spinner = ora(`使用 ${origin} 翻译中...`).start();
-            yield (0, mock_1.mockLangs)(origin);
+            yield mock_1.mockLangs(origin);
             spinner.succeed(`使用 ${origin} 翻译成功`);
         }
     }));
 }
 if (commander.translate) {
-    (0, sync_1.sync)(() => __awaiter(void 0, void 0, void 0, function* () {
-        const { pass, origin } = yield (0, utils_1.getTranslateOriginType)();
+    sync_1.sync(() => __awaiter(this, void 0, void 0, function* () {
+        const { pass, origin } = yield utils_1.getTranslateOriginType();
         if (pass) {
             const spinner = ora(`使用 ${origin} 翻译中...`).start();
-            yield (0, translate_1.translate)(origin);
+            yield translate_1.translate(origin);
             spinner.succeed(`使用 ${origin} 翻译成功`);
         }
     }));
 }
 if (commander.extract) {
-    console.log((0, lodash_1.isString)(commander.prefix));
+    console.log(lodash_1.isString(commander.prefix));
     if (commander.prefix === true) {
         console.log('请指定翻译后文案 key 值的前缀 --prefix xxxx');
     }
-    else if ((0, lodash_1.isString)(commander.prefix) && !new RegExp(/^I18N(\.[-_a-zA-Z1-9$]+)+$/).test(commander.prefix)) {
+    else if (lodash_1.isString(commander.prefix) && !new RegExp(/^I18N(\.[-_a-zA-Z1-9$]+)+$/).test(commander.prefix)) {
         console.log('前缀必须以I18N开头,后续跟上字母、下滑线、破折号、$ 字符组成的变量名');
     }
     else {
         const extractAllParams = {
-            prefix: (0, lodash_1.isString)(commander.prefix) && commander.prefix,
-            dirPath: (0, lodash_1.isString)(commander.extract) && commander.extract
+            prefix: lodash_1.isString(commander.prefix) && commander.prefix,
+            dirPath: lodash_1.isString(commander.extract) && commander.extract
         };
-        (0, extract_1.extractAll)(extractAllParams);
+        extract_1.extractAll(extractAllParams);
     }
 }
 //# sourceMappingURL=index.js.map

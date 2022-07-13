@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findUnUsed = void 0;
 /**
  * @author linhuiw
  * @desc 查找未使用的 key
@@ -10,7 +9,7 @@ const path = require("path");
 const utils_1 = require("./utils");
 const lookingForString = '';
 function findUnUsed() {
-    const srcLangDir = path.resolve((0, utils_1.getKiwiDir)(), 'zh-CN');
+    const srcLangDir = path.resolve(utils_1.getKiwiDir(), 'zh-CN');
     let files = fs.readdirSync(srcLangDir);
     files = files.filter(file => file.endsWith('.ts') && file !== 'index.ts');
     const unUnsedKeys = [];
@@ -18,7 +17,7 @@ function findUnUsed() {
         const srcFile = path.resolve(srcLangDir, file);
         const { default: messages } = require(srcFile);
         const filename = path.basename(file, '.ts');
-        (0, utils_1.traverse)(messages, (text, path) => {
+        utils_1.traverse(messages, (text, path) => {
             const key = `I18N.${filename}.${path}`;
             const hasKey = recursiveReadFile('./src', key);
             if (!hasKey) {
