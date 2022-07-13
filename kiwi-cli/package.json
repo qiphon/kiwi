@@ -1,5 +1,5 @@
 {
-  "name": "kiwi-clis",
+  "name": "kiwi-cli-base",
   "version": "1.0.24",
   "description": "a cli for kiwi",
   "main": "dist/index.js",
