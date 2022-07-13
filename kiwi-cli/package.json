@@ -1,6 +1,6 @@
 {
   "name": "kiwi-clis",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "a cli for kiwi",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/alibaba/kiwi.git"
+    "url": "git+ssh://git@github.com/qiphon/kiwi.git"
   },
   "keywords": [
     "cli",
@@ -22,9 +22,9 @@
   "author": "linhuiw",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alibaba/kiwi/issues"
+    "url": "https://github.com/qiphon/kiwi/issues"
   },
-  "homepage": "https://github.com/alibaba/kiwi#readme",
+  "homepage": "https://github.com/qiphon/kiwi#readme",
   "dependencies": {
     "@angular/compiler": "^7.2.0",
     "@babel/core": "^7.5.5",
