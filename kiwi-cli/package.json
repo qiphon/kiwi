@@ -1,10 +1,11 @@
 {
   "name": "kiwi-cli-base",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "a cli for kiwi",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsc --watch",
+    "kiwi": "node ./dist/index.js --extract ./test.ts ",
     "prepublish": "tsc"
   },
   "repository": {

@@ -16,6 +16,11 @@ function transerI18n(code, filename, lang) {
     return javascriptI18n(code, filename);
   }
 }
+
+function getScriptKind(fileName: string) {
+  return fileName.endsWith('.ts') ? ts.ScriptKind.TS : ts.ScriptKind.TSX;
+}
+
 function javascriptI18n(code, filename) {
   let arr = [];
   let visitor = {
@@ -34,7 +39,8 @@ function javascriptI18n(code, filename) {
 }
 function typescriptI18n(code, fileName) {
   let arr = [];
-  const ast = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
+  const scriptKind = getScriptKind(fileName);
+  const ast = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, scriptKind);
   function visit(node: ts.Node) {
     switch (node.kind) {
       case ts.SyntaxKind.StringLiteral: {
@@ -58,13 +64,7 @@ function typescriptI18n(code, fileName) {
  */
 function removeFileComment(code, fileName) {
   const printer = ts.createPrinter({ removeComments: true });
-  const sourceFile = ts.createSourceFile(
-    '',
-    code,
-    ts.ScriptTarget.ES2015,
-    true,
-    fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS
-  );
+  const sourceFile = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, getScriptKind(fileName));
   return printer.printFile(sourceFile);
 }
 
@@ -74,7 +74,7 @@ function removeFileComment(code, fileName) {
  */
 function findTextInTs(code: string, fileName: string) {
   const matches = [];
-  const ast = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TSX);
+  const ast = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, getScriptKind(fileName));
 
   function visit(node: ts.Node) {
     switch (node.kind) {

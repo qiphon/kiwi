@@ -5,7 +5,7 @@
             "program": "${workspaceFolder}/kiwi-cli/dist/index.js",
             "args": [
                 "--extract",
-                "${workspaceFolder}/kiwi-cli/1.ts"
+                "${workspaceFolder}/kiwi-cli/test.ts"
             ],
             "request": "launch",
             "skipFiles": [
