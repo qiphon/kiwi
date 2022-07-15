@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "kiwi": "node ./dist/index.js --extract ./test.ts ",
+    "kiwiRequest": "node ./dist/index.js --extract ./request.ts --prefix I18N.REQUEST ",
     "prepublish": "tsc"
   },
   "repository": {

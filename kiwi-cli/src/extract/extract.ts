@@ -107,7 +107,13 @@ function getSuggestion(currentFilename: string) {
 
   return suggestion;
 }
-
+/** 文案首字母大小 变量小写 */
+function textToUpperCaseByFirstWord(text) {
+  // 翻译文案首字母大写，变量小写
+  return text
+    ? `${text.charAt(0).toUpperCase()}${text.slice(1)}`.replace(/(\{.*?\})/g, text => text.toLowerCase())
+    : '';
+}
 /**
  * 统一处理key值，已提取过的文案直接替换，翻译后的key若相同，加上出现次数
  * @param currentFilename 文件路径
@@ -155,7 +161,12 @@ function getReplaceableStrs(currentFilename: string, langsPrefix: string, transl
       virtualMemory[_text] = transKey;
       finalLangObj[transKey] = _text;
       return prev.concat({
-        target: curr,
+        target: {
+          ...curr,
+          ident: textToUpperCaseByFirstWord(
+            `${suggestion.length ? suggestion.join('') : ''}${textToUpperCaseByFirstWord(transText)}`
+          )
+        },
         key: transKey,
         needWrite: true
       });

@@ -5,7 +5,9 @@
             "program": "${workspaceFolder}/kiwi-cli/dist/index.js",
             "args": [
                 "--extract",
-                "${workspaceFolder}/kiwi-cli/test.ts"
+                "${workspaceFolder}/kiwi-cli/views/carbon/request.ts",
+                "--prefix",
+                "I18N.TEST"
             ],
             "request": "launch",
             "skipFiles": [

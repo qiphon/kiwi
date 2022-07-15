@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 specifiers:
   '@angular/compiler': ^7.2.0
@@ -44,7 +44,7 @@ dependencies:
   prettier: 1.19.1
   randomstring: 1.2.2
   slash2: 2.0.0
-  ts-node: 10.8.2_ywo3azfrizkef3qhfgmp6on4fq
+  ts-node: 10.8.2_c59db064b1465442ee072998ff39bc2c
   typescript: 4.7.4
   vue-template-compiler: 2.7.5
 
@@ -1214,7 +1214,7 @@ packages:
       punycode: 2.1.1
     dev: false
 
-  /ts-node/10.8.2_ywo3azfrizkef3qhfgmp6on4fq:
+  /ts-node/10.8.2_c59db064b1465442ee072998ff39bc2c:
     resolution: {integrity: sha512-LYdGnoGddf1D6v8REPtIH+5iq/gTDuZqv2/UJUU7tKjuEU8xVZorBM+buCGNjj+pGEud+sOoM4CX3/YzINpENA==}
     hasBin: true
     peerDependencies:

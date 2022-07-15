@@ -4,6 +4,7 @@
  */
 
 import * as fs from 'fs-extra';
+// import * as path from 'path';
 import * as _ from 'lodash';
 import * as prettier from 'prettier';
 import * as ts from 'typescript';
@@ -14,7 +15,7 @@ import { getProjectConfig, getLangDir, successInfo, failInfo, highlightText } fr
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
 
-function updateLangFiles(keyValue, text, validateDuplicate) {
+function updateLangFiles(keyValue, text, validateDuplicate, ident) {
   if (!_.startsWith(keyValue, 'I18N.')) {
     return;
   }
@@ -24,7 +25,7 @@ function updateLangFiles(keyValue, text, validateDuplicate) {
   const targetFilename = `${srcLangDir}/${filename}.ts`;
 
   if (!fs.existsSync(targetFilename)) {
-    fs.writeFileSync(targetFilename, generateNewLangFile(fullKey, text));
+    fs.writeFileSync(targetFilename, generateNewLangFile(fullKey, text, ident));
     addImportToMainLangFile(filename);
     successInfo(`成功新建语言文件 ${targetFilename}`);
   } else {
@@ -42,9 +43,22 @@ function updateLangFiles(keyValue, text, validateDuplicate) {
     }
     // \n 会被自动转义成 \\n，这里转回来
     text = text.replace(/\\n/gm, '\n');
-    _.set(obj, fullKey, text);
+    _.set(obj, fullKey, {
+      ident,
+      zh: text,
+      en: ''
+    });
+    // _.set(obj, fullKey, text);
     fs.writeFileSync(targetFilename, prettierFile(`export default ${JSON.stringify(obj, null, 2)}`));
   }
+  // const langDirs = CONFIG.distLangs;
+  // langDirs.map(dir => {
+  //   const filePath = path.resolve(dir, `${fullKey}.ts`);
+  //   if (!fs.existsSync(dir)) {
+  //     fs.mkdirSync(dir);
+  //   }
+  //   fs.copyFileSync(path.resolve(srcLangDir, `${fullKey}.ts`), filePath);
+  // });
 }
 
 /**
@@ -64,8 +78,13 @@ function prettierFile(fileContent) {
   }
 }
 
-function generateNewLangFile(key, value) {
-  const obj = _.set({}, key, value);
+function generateNewLangFile(key, value, ident) {
+  const obj = _.set({}, key, {
+    ident,
+    zh: value,
+    en: ''
+  });
+  // const obj = _.set({}, key, value);
 
   return prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
 }
@@ -181,6 +200,8 @@ function replaceAndUpdate(filePath, arg, val, validateDuplicate, needWrite = tru
   const code = readFile(filePath);
   const isHtmlFile = _.endsWith(filePath, '.html');
   const isVueFile = _.endsWith(filePath, '.vue');
+  // 标识
+  const ident = arg.ident;
   let newCode = code;
   let finalReplaceText = arg.text;
   const { start, end } = arg.range;
@@ -226,7 +247,7 @@ function replaceAndUpdate(filePath, arg, val, validateDuplicate, needWrite = tru
   try {
     if (needWrite) {
       // 更新语言文件
-      updateLangFiles(val, finalReplaceText, validateDuplicate);
+      updateLangFiles(val, finalReplaceText, validateDuplicate, ident);
     }
     // 若更新成功再替换代码
     return writeFile(filePath, newCode);
