@@ -118,6 +118,15 @@ function textToUpperCaseByFirstWord(text) {
     ? `${text.charAt(0).toUpperCase()}${text.slice(1)}`.replace(/(\{.*?\})/g, text => text.toLowerCase())
     : '';
 }
+
+export type ReplacedStrTarget = {
+  ident?: string;
+} & MatchText;
+export type ReplacedStr = {
+  target: ReplacedStrTarget;
+  key: string;
+  needWrite: boolean;
+};
 /**
  * 统一处理key值，已提取过的文案直接替换，翻译后的key若相同，加上出现次数
  * @param currentFilename 文件路径
@@ -135,7 +144,7 @@ function getReplaceableStrs(
   const finalLangObj = getSuggestLangObj();
   const virtualMemory = {};
   const suggestion = getSuggestion(currentFilename);
-  const replaceableStrs = targetStrs.reduce((prev, curr, i) => {
+  const replaceableStrs: ReplacedStr[] = targetStrs.reduce((prev, curr, i) => {
     const _text = curr.text;
     let key = findMatchKey(finalLangObj, _text);
     if (key) {
@@ -273,7 +282,6 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
       failInfo(`未得到翻译结果，${currentFilename}替换失败！`);
       return;
     }
-
     const replaceableStrs = getReplaceableStrs(currentFilename, langsPrefix, translateTexts, targetStrs);
 
     await replaceableStrs

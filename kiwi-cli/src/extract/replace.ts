@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import { readFile, writeFile } from './file';
 import { getLangData } from './getLangData';
 import { getProjectConfig, getLangDir, successInfo, failInfo, highlightText } from '../utils';
+import { ReplacedStr } from './extract';
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
@@ -196,7 +197,7 @@ function createImportI18N(filePath) {
  * @param validateDuplicate 是否校验文件中已经存在要写入的 key
  * @param needWrite 是否只需要替换不需要更新 langs 文件
  */
-function replaceAndUpdate(filePath, arg, val, validateDuplicate, needWrite = true) {
+function replaceAndUpdate(filePath, arg: ReplacedStr['target'], val, validateDuplicate, needWrite = true) {
   const code = readFile(filePath);
   const isHtmlFile = _.endsWith(filePath, '.html');
   const isVueFile = _.endsWith(filePath, '.vue');
@@ -207,35 +208,40 @@ function replaceAndUpdate(filePath, arg, val, validateDuplicate, needWrite = tru
   const { start, end } = arg.range;
   // 若是字符串，删掉两侧的引号
   if (arg.isString) {
-    // 如果引号左侧是 等号，则可能是 jsx 的 props，此时要替换成 {
-    const preTextStart = start - 1;
-    const [last2Char, last1Char] = code.slice(preTextStart, start + 1).split('');
-    let finalReplaceVal = val;
-    if (last2Char === '=') {
-      if (isHtmlFile) {
-        finalReplaceVal = '{{' + val + '}}';
-      } else if (isVueFile) {
-        finalReplaceVal = '{{' + val + '}}';
-      } else {
-        finalReplaceVal = '{' + val + '}';
+    if (!arg?.isEnumMember) {
+      // 如果引号左侧是 等号，则可能是 jsx 的 props，此时要替换成 {
+      const preTextStart = start - 1;
+      const [last2Char, last1Char] = code.slice(preTextStart, start + 1).split('');
+      let finalReplaceVal = val;
+      if (last2Char === '=') {
+        if (isHtmlFile) {
+          finalReplaceVal = '{{' + val + '}}';
+        } else if (isVueFile) {
+          finalReplaceVal = '{{' + val + '}}';
+        } else {
+          finalReplaceVal = '{' + val + '}';
+        }
       }
-    }
-    // 若是模板字符串，看看其中是否包含变量
-    if (last1Char === '`') {
-      const varInStr = arg.text.match(/(\$\{[^\}]+?\})/g);
-      if (varInStr) {
-        const kvPair = varInStr.map((str, index) => {
-          return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
-        });
-        finalReplaceVal = `I18N.template(${val}, { ${kvPair.join(',\n')} })`;
+      // 若是模板字符串，看看其中是否包含变量
+      if (last1Char === '`') {
+        const varInStr = arg.text.match(/(\$\{[^\}]+?\})/g);
+        if (varInStr) {
+          const kvPair = varInStr.map((str, index) => {
+            return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
+          });
+          finalReplaceVal = `I18N.template(${val}, { ${kvPair.join(',\n')} })`;
 
-        varInStr.forEach((str, index) => {
-          finalReplaceText = finalReplaceText.replace(str, `{val${index + 1}}`);
-        });
+          varInStr.forEach((str, index) => {
+            finalReplaceText = finalReplaceText.replace(str, `{val${index + 1}}`);
+          });
+        }
       }
-    }
 
-    newCode = `${code.slice(0, start)}${finalReplaceVal}${code.slice(end)}`;
+      newCode = `${code.slice(0, start)}${finalReplaceVal}${code.slice(end)}`;
+    } else {
+      // 不处理枚举值
+      newCode = code.slice(0);
+    }
   } else {
     if (isHtmlFile || isVueFile) {
       newCode = `${code.slice(0, start)}{{${val}}}${code.slice(end)}`;
