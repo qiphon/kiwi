@@ -6,7 +6,7 @@
 import * as fs from 'fs-extra';
 // import * as path from 'path';
 import * as _ from 'lodash';
-import * as prettier from 'prettier';
+// const prettier = require('prettier');
 import * as ts from 'typescript';
 import { readFile, writeFile } from './file';
 import { getLangData } from './getLangData';
@@ -66,16 +66,16 @@ function updateLangFiles(keyValue, text, validateDuplicate, ident) {
  * @param fileContent
  */
 function prettierFile(fileContent) {
-  try {
-    return prettier.format(fileContent, {
-      parser: 'typescript',
-      trailingComma: 'all',
-      singleQuote: true
-    });
-  } catch (e) {
-    failInfo(`代码格式化报错！${e.toString()}\n代码为：${fileContent}`);
-    return fileContent;
-  }
+  // try {
+  //   return prettier.format(fileContent, {
+  //     parser: 'typescript',
+  //     trailingComma: 'all',
+  //     singleQuote: true
+  //   });
+  // } catch (e) {
+  //   failInfo(`代码格式化报错！${e.toString()}\n代码为：${fileContent}`);
+  return fileContent;
+  // }
 }
 
 function generateNewLangFile(key, value, ident) {
