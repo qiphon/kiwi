@@ -103,9 +103,9 @@ function getSuggestion(currentFilename: string) {
     const fileKey = fileName.split('.')[0].replace(new RegExp('-', 'g'), '_');
     const dir = names[names.length - 2].replace(new RegExp('-', 'g'), '_');
     if (dir === fileKey) {
-      suggestion = [dir];
+      suggestion = [_.capitalize(dir)];
     } else {
-      suggestion = [dir, fileKey];
+      suggestion = [_.capitalize(dir), _.capitalize(fileKey)];
     }
   }
 
