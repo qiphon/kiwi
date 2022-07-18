@@ -35,6 +35,7 @@ function creteConfigFile(existDir?: string) {
 }
 
 function createCnFile() {
+  // const initArr = PROJECT_CONFIG.defaultConfig.distLangs;
   const cnDir = `${PROJECT_CONFIG.dir}/zh-CN`;
   if (!fs.existsSync(cnDir)) {
     fs.mkdirSync(cnDir);

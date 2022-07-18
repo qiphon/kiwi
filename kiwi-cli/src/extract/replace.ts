@@ -12,54 +12,70 @@ import { readFile, writeFile } from './file';
 import { getLangData } from './getLangData';
 import { getProjectConfig, getLangDir, successInfo, failInfo, highlightText } from '../utils';
 import { ReplacedStr } from './extract';
+import { PROJECT_CONFIG } from '../const';
 
 const CONFIG = getProjectConfig();
 const srcLangDir = getLangDir(CONFIG.srcLang);
-
+/**
+ * 判断是否有对应的其他的翻译文件
+ */
+function createCnFile() {
+  const initArr = CONFIG.distLangs;
+  initArr.forEach(url => {
+    const cnDir = `${CONFIG.kiwiDir}/${url}`;
+    if (!fs.existsSync(cnDir)) {
+      fs.mkdirSync(cnDir);
+      fs.writeFile(`${cnDir}/index.ts`, PROJECT_CONFIG.zhIndexFile, err => {
+        if (err) {
+          console.log(err);
+        }
+      });
+      fs.writeFile(`${cnDir}/common.ts`, PROJECT_CONFIG.zhTestFile, err => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+  });
+}
 function updateLangFiles(keyValue, text, validateDuplicate, ident) {
   if (!_.startsWith(keyValue, 'I18N.')) {
     return;
   }
-
+  // 合并当前所有的语种支持
+  const initArrDistLangs = [...CONFIG.distLangs, CONFIG.srcLang];
   const [, filename, ...restPath] = keyValue.split('.');
   const fullKey = restPath.join('.');
-  const targetFilename = `${srcLangDir}/${filename}.ts`;
+  initArrDistLangs.forEach(lang => {
+    const targetFilename = `${getLangDir(lang)}/${filename}.ts`;
+    if (!fs.existsSync(targetFilename)) {
+      fs.writeFileSync(targetFilename, generateNewLangFile(fullKey, text, ident));
+      addImportToMainLangFile(filename, getLangDir(lang));
+      successInfo(`成功新建语言文件 ${targetFilename}`);
+    } else {
+      // 清除 require 缓存，解决手动更新语言文件后再自动抽取，导致之前更新失效的问题
+      const mainContent = getLangData(targetFilename);
+      const obj = mainContent;
 
-  if (!fs.existsSync(targetFilename)) {
-    fs.writeFileSync(targetFilename, generateNewLangFile(fullKey, text, ident));
-    addImportToMainLangFile(filename);
-    successInfo(`成功新建语言文件 ${targetFilename}`);
-  } else {
-    // 清除 require 缓存，解决手动更新语言文件后再自动抽取，导致之前更新失效的问题
-    const mainContent = getLangData(targetFilename);
-    const obj = mainContent;
+      if (Object.keys(obj).length === 0) {
+        failInfo(`${filename} 解析失败，该文件包含的文案无法自动补全`);
+      }
 
-    if (Object.keys(obj).length === 0) {
-      failInfo(`${filename} 解析失败，该文件包含的文案无法自动补全`);
+      if (validateDuplicate && _.get(obj, fullKey) !== undefined) {
+        failInfo(`${targetFilename} 中已存在 key 为 \`${fullKey}\` 的翻译，请重新命名变量`);
+        throw new Error('duplicate');
+      }
+      // \n 会被自动转义成 \\n，这里转回来
+      text = text.replace(/\\n/gm, '\n');
+      _.set(obj, fullKey, {
+        ident,
+        source: text,
+        target: ''
+      });
+      // _.set(obj, fullKey, text);
+      fs.writeFileSync(targetFilename, prettierFile(`export default ${JSON.stringify(obj, null, 2)}`));
     }
-
-    if (validateDuplicate && _.get(obj, fullKey) !== undefined) {
-      failInfo(`${targetFilename} 中已存在 key 为 \`${fullKey}\` 的翻译，请重新命名变量`);
-      throw new Error('duplicate');
-    }
-    // \n 会被自动转义成 \\n，这里转回来
-    text = text.replace(/\\n/gm, '\n');
-    _.set(obj, fullKey, {
-      ident,
-      zh: text,
-      en: ''
-    });
-    // _.set(obj, fullKey, text);
-    fs.writeFileSync(targetFilename, prettierFile(`export default ${JSON.stringify(obj, null, 2)}`));
-  }
-  // const langDirs = CONFIG.distLangs;
-  // langDirs.map(dir => {
-  //   const filePath = path.resolve(dir, `${fullKey}.ts`);
-  //   if (!fs.existsSync(dir)) {
-  //     fs.mkdirSync(dir);
-  //   }
-  //   fs.copyFileSync(path.resolve(srcLangDir, `${fullKey}.ts`), filePath);
-  // });
+  });
 }
 
 /**
@@ -82,18 +98,18 @@ function prettierFile(fileContent) {
 function generateNewLangFile(key, value, ident) {
   const obj = _.set({}, key, {
     ident,
-    zh: value,
-    en: ''
+    source: value,
+    target: ''
   });
   // const obj = _.set({}, key, value);
 
   return prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
 }
 
-function addImportToMainLangFile(newFilename) {
+function addImportToMainLangFile(newFilename, srcDir) {
   let mainContent = '';
-  if (fs.existsSync(`${srcLangDir}/index.ts`)) {
-    mainContent = fs.readFileSync(`${srcLangDir}/index.ts`, 'utf8');
+  if (fs.existsSync(`${srcDir}/index.ts`)) {
+    mainContent = fs.readFileSync(`${srcDir}/index.ts`, 'utf8');
     mainContent = mainContent.replace(/^(\s*import.*?;)$/m, `$1\nimport ${newFilename} from './${newFilename}';`);
     if (/(}\);)/.test(mainContent)) {
       if (/\,\n(}\);)/.test(mainContent)) {
@@ -118,7 +134,7 @@ function addImportToMainLangFile(newFilename) {
     mainContent = `import ${newFilename} from './${newFilename}';\n\nexport default Object.assign({}, {\n  ${newFilename},\n});`;
   }
 
-  fs.writeFileSync(`${srcLangDir}/index.ts`, mainContent);
+  fs.writeFileSync(`${srcDir}/index.ts`, mainContent);
 }
 
 /**
@@ -253,6 +269,8 @@ function replaceAndUpdate(filePath, arg: ReplacedStr['target'], val, validateDup
 
   try {
     if (needWrite) {
+      // 先将文件夹生成
+      createCnFile();
       // 更新语言文件
       updateLangFiles(val, finalReplaceText, validateDuplicate, ident);
     }
