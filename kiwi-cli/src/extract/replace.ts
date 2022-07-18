@@ -44,7 +44,7 @@ function updateLangFiles(keyValue, text, validateDuplicate, ident) {
   // 合并当前所有的语种支持
   const initArrDistLangs = [...CONFIG.distLangs, CONFIG.srcLang];
   const [, filename, ...restPath] = keyValue.split('.');
-  const fullKey = restPath.join('.');
+  const fullKey = _.camelCase(ident);
   initArrDistLangs.forEach(lang => {
     const targetFilename = `${getLangDir(lang)}/${filename}.ts`;
     if (!fs.existsSync(targetFilename)) {
@@ -67,7 +67,7 @@ function updateLangFiles(keyValue, text, validateDuplicate, ident) {
       // \n 会被自动转义成 \\n，这里转回来
       text = text.replace(/\\n/gm, '\n');
       _.set(obj, fullKey, {
-        ident,
+        ident: _.camelCase(ident),
         source: text,
         target: ''
       });
@@ -96,7 +96,7 @@ function prettierFile(fileContent) {
 
 function generateNewLangFile(key, value, ident) {
   const obj = _.set({}, key, {
-    ident,
+    ident: _.camelCase(ident),
     source: value,
     target: ''
   });
