@@ -67,13 +67,25 @@ function removeFileComment(code, fileName) {
   const sourceFile = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, getScriptKind(fileName));
   return printer.printFile(sourceFile);
 }
+export type MatchText = {
+  // vue
+  arrf?: number[];
+  range: {
+    start: number;
+    end: number;
+  };
+  text: string;
+  isString: boolean;
+  /** 目前仅用于 tsx、ts 中 */
 
+  isEnumMember?: boolean;
+};
 /**
- * 查找 Ts 文件中的中文
+ * 查找 Ts Tsx 文件中的中文
  * @param code
  */
 function findTextInTs(code: string, fileName: string) {
-  const matches = [];
+  const matches: MatchText[] = [];
   const ast = ts.createSourceFile('', code, ts.ScriptTarget.ES2015, true, getScriptKind(fileName));
 
   function visit(node: ts.Node) {
@@ -88,7 +100,8 @@ function findTextInTs(code: string, fileName: string) {
           matches.push({
             range,
             text,
-            isString: true
+            isString: true,
+            isEnumMember: node?.parent?.kind === ts.SyntaxKind.EnumMember
           });
         }
         break;
@@ -162,7 +175,7 @@ function findTextInTs(code: string, fileName: string) {
  * @param code
  */
 function findTextInHtml(code) {
-  const matches = [];
+  const matches: MatchText[] = [];
   const ast = compiler.parseTemplate(code, 'ast.html', {
     preserveWhitespaces: false
   });
@@ -238,7 +251,7 @@ function findTextInVue(code: string) {
   let coverRex1 = new RegExp(/ccsp&;/, 'g');
   let coverRex2 = new RegExp(/ecsp&;/, 'g');
   let coverRex3 = new RegExp(/ncsp&;/, 'g');
-  let matches = [];
+  let matches: MatchText[] = [];
   var result;
   const vueObejct = compilerVue.compile(code.toString(), { outputSourceRange: true });
   let vueAst = vueObejct.ast;

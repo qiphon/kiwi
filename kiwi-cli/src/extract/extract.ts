@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as colors from 'colors';
 
 import { getSpecifiedFiles, readFile, writeFile, isFile, isDirectory } from './file';
-import { findChineseText } from './findChineseText';
+import { findChineseText, MatchText } from './findChineseText';
 import { getSuggestLangObj } from './getLangData';
 import {
   translateText,
@@ -36,6 +36,10 @@ function removeLangsFiles(files: string[]) {
   });
 }
 
+export type MatchTextAndFile = {
+  file: string;
+  texts: MatchText[];
+};
 /**
  * 递归匹配项目中所有的代码的中文
  */
@@ -51,7 +55,7 @@ function findAllChineseText(dir: string) {
   const filterFiles = files.filter(file => {
     return (isFile(file) && file.endsWith('.ts')) || file.endsWith('.tsx') || file.endsWith('.vue');
   });
-  const allTexts = filterFiles.reduce((pre, file) => {
+  const allTexts: MatchTextAndFile[] = filterFiles.reduce((pre, file) => {
     const code = readFile(file);
     const texts = findChineseText(code, file);
     // 调整文案顺序，保证从后面的文案往前替换，避免位置更新导致替换出错
@@ -122,7 +126,12 @@ function textToUpperCaseByFirstWord(text) {
  * @param targetStrs 当前文件提取后的文案
  * @returns any[] 最终可用于替换的key值和文案
  */
-function getReplaceableStrs(currentFilename: string, langsPrefix: string, translateTexts: string[], targetStrs: any[]) {
+function getReplaceableStrs(
+  currentFilename: string,
+  langsPrefix: string,
+  translateTexts: string[],
+  targetStrs: MatchText[]
+) {
   const finalLangObj = getSuggestLangObj();
   const virtualMemory = {};
   const suggestion = getSuggestion(currentFilename);
@@ -219,11 +228,11 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
   console.log('即将截取每个中文文案的前5位翻译生成key值，并替换中...');
 
   // 对当前文件进行文案key生成和替换
-  const generateKeyAndReplace = async item => {
+  const generateKeyAndReplace = async (item: MatchTextAndFile) => {
     const currentFilename = item.file;
     console.log(`${currentFilename} 替换中...`);
     // 过滤掉模板字符串内的中文，避免替换时出现异常
-    const targetStrs = item.texts.reduce((pre, strObj, i) => {
+    const targetStrs: MatchText[] = item.texts.reduce((pre, strObj, i) => {
       // 因为文案已经根据位置倒排，所以比较时只需要比较剩下的文案即可
       const afterStrs = item.texts.slice(i + 1);
       if (afterStrs.some(obj => strObj.range.end <= obj.range.end)) {
@@ -241,13 +250,13 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
     if (origin !== 'Google') {
       // 翻译中文文案，百度和pinyin将文案进行拼接统一翻译
       const delimiter = origin === 'Baidu' ? '\n' : '$';
-      const translateOriginTexts = targetStrs.reduce((prev, curr, i) => {
+      const translateOriginTexts: string = targetStrs.reduce((prev, curr, i) => {
         const transOriginText = getTransOriginText(curr.text);
         if (i === 0) {
           return transOriginText;
         }
         return `${prev}${delimiter}${transOriginText}`;
-      }, []);
+      }, '');
 
       translateTexts = await translateKeyText(translateOriginTexts, origin);
     } else {
