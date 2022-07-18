@@ -25,7 +25,7 @@ exports.PROJECT_CONFIG = {
             concurrentLimit: 10,
             requestOptions: {}
         },
-        defaultTranslateKeyApi: 'Pinyin',
+        defaultTranslateKeyApi: 'Baidu',
         importI18N: `import I18N from 'src/utils/I18N';`,
         ignoreDir: '',
         ignoreFile: ''

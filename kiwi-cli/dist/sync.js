@@ -60,7 +60,7 @@ function writeTranslations(file, toLang, translations) {
                 reject(err);
             }
             else {
-                resolve();
+                resolve('writeTranslations ok');
             }
         });
     });

@@ -62,7 +62,7 @@ function writeTranslations(file, toLang, translations) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve('writeTranslations ok');
       }
     });
   });

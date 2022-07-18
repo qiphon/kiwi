@@ -98,7 +98,7 @@ function writeMockFile(dstLang, mocks) {
                 reject(err);
             }
             else {
-                resolve();
+                resolve('writeMockFile ok');
             }
         });
     });

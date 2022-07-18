@@ -164,7 +164,7 @@ function runTranslateApi(dstLang, origin) {
                     console.log(`${dstLang} 自动翻译完成`);
                     // 自动导入翻译结果
                     (0, import_1.importMessages)(filePath, dstLang);
-                    resolve();
+                    resolve('自动翻译完成');
                 }
             });
         });
