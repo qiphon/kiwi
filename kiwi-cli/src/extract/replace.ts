@@ -239,6 +239,7 @@ function replaceAndUpdate(filePath, arg: ReplacedStr['target'], val, validateDup
 
       newCode = `${code.slice(0, start)}${finalReplaceVal}${code.slice(end)}`;
     } else {
+      console.log(`${filePath} 含有中文枚举，需要手动替换翻译！`);
       // 不处理枚举值
       newCode = code.slice(0);
     }
