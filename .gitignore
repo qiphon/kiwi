@@ -17,7 +17,7 @@ yarn-error.log*
 *.orig
 .history/
 .cache-loader/
-
+.parcel-cache
 package-lock.json
 
 
