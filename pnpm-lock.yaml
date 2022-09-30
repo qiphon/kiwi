@@ -57,10 +57,10 @@ importers:
   kiwi-intl:
     specifiers:
       '@types/mocha': ^2.2.42
-      '@types/node': ^7.0.31
+      '@types/node': '16'
       babel-cli: ^6.18.0
       intl-messageformat: ^2.2.0
-      lodash.get: ^4.4.2
+      lodash-es: ^4.17.21
       mocha: ^3.5.0
       ts-loader: ^2.3.0
       ts-node: ^3.3.0
@@ -71,10 +71,10 @@ importers:
       webpack-dev-server: 2.9.1
     dependencies:
       intl-messageformat: 2.2.0
-      lodash.get: 4.4.2
+      lodash-es: 4.17.21
     devDependencies:
       '@types/mocha': 2.2.48
-      '@types/node': 7.10.14
+      '@types/node': 16.11.45
       babel-cli: 6.26.0
       mocha: 3.5.3
       ts-loader: 2.3.7
@@ -1314,6 +1314,10 @@ packages:
   /@types/node/10.17.60:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
     dev: false
+
+  /@types/node/16.11.45:
+    resolution: {integrity: sha512-3rKg/L5x0rofKuuUt5zlXzOnKyIHXmIu5R8A0TuNDMF2062/AOIDBciFIjToLEJ/9F9DzkHNot+BpNsMI1OLdQ==}
+    dev: true
 
   /@types/node/7.10.14:
     resolution: {integrity: sha512-29GS75BE8asnTno3yB6ubOJOO0FboExEqNJy4bpz0GSmW/8wPTNL4h9h63c6s1uTrOopCmJYe/4yJLh5r92ZUA==}
@@ -5235,6 +5239,10 @@ packages:
       path-exists: 3.0.0
     dev: true
 
+  /lodash-es/4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+    dev: false
+
   /lodash._baseassign/3.2.0:
     resolution: {integrity: sha512-t3N26QR2IdSN+gqSy9Ds9pBu/J1EAFEshKlUHpJG3rvyJOYgcELIxcIeKKfZk7sjOz11cFfzJRsyFry/JyabJQ==}
     dependencies:
@@ -5265,10 +5273,6 @@ packages:
       lodash._basecreate: 3.0.3
       lodash._isiterateecall: 3.0.9
     dev: true
-
-  /lodash.get/4.4.2:
-    resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
-    dev: false
 
   /lodash.isarguments/3.1.0:
     resolution: {integrity: sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg==}

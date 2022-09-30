@@ -1,5 +1,5 @@
 import IntlMessageFormat from 'intl-messageformat';
-import * as lodashGet from 'lodash.get';
+import { get as lodashGet } from 'lodash-es';
 import Observer from './Observer';
 class I18N {
     constructor(lang, metas, defaultKey) {
@@ -41,7 +41,7 @@ class I18N {
     get(str, args) {
         let msg = lodashGet(this.__data__, str);
         if (!msg) {
-            msg = lodashGet(this.__metas__[this.__defaultKey__ || 'zh-CN'], str, str);
+            msg = lodashGet(this.__metas__[this.__defaultKey__ || 'zh-CN'], str, '');
         }
         if (args) {
             try {

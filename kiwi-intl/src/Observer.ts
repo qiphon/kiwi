@@ -21,9 +21,9 @@ var defineReactive = (obj, key, defaultKey) => {
   var childObj = observe(obj[key]);
   Object.defineProperty(obj, key, {
     get() {
-      if (obj.__data__[key]) {
+      if (obj.__data__?.[key]) {
         return obj.__data__[key];
-      } else if (obj.__metas__[defaultKey][key]) {
+      } else if (obj.__metas__?.[defaultKey]?.[key]) {
         return obj.__metas__[defaultKey][key];
       }
     },
