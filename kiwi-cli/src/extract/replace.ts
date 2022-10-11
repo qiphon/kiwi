@@ -222,6 +222,7 @@ function replaceAndUpdate(filePath, arg: ReplacedStr['target'], val, validateDup
   let newCode = code;
   let finalReplaceText = arg.text;
   const { start, end } = arg.range;
+
   // 若是字符串，删掉两侧的引号
   if (arg.isString) {
     if (!arg?.isEnumMember) {
@@ -256,6 +257,7 @@ function replaceAndUpdate(filePath, arg: ReplacedStr['target'], val, validateDup
       newCode = `${code.slice(0, start)}${finalReplaceVal}${code.slice(end)}`;
     } else {
       console.log(`${filePath} 含有中文枚举，需要手动替换翻译！`);
+      console.log(arg, 'arg---->', JSON.stringify(arg));
       // 不处理枚举值
       newCode = code.slice(0);
     }

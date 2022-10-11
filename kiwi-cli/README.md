@@ -8,6 +8,9 @@ Kiwi 的 CLI 工具
 
 > 推荐与[🐤 Kiwi-国际化全流程解决方案](https://github.com/alibaba/kiwi)结合使用
 
+
+updateLangFiles  函数，生成语言包文件
+
 ## CLI 参数
 
 ### kiwi `--init`

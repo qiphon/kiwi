@@ -1,33 +1,12 @@
 {
   "name": "kiwi-cli-base",
   "version": "1.0.25",
-  "description": "a cli for kiwi",
-  "main": "dist/index.js",
-  "scripts": {
-    "dev": "tsc --watch",
-    "kiwi": "node ./dist/index.js --extract ./test.ts ",
-    "kiwiRequest": "node ./dist/index.js --extract ./request.ts --prefix I18N.REQUEST ",
-    "build": "NODE_ENV=development parcel build ./src/index.ts --dist-dir ./dist ",
-    "prepublish": "tsc"
-  },
+  "author": "qiphon",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/qiphon/kiwi.git"
   },
-  "keywords": [
-    "cli",
-    "kiwi",
-    "i18n"
-  ],
-  "bin": {
-    "kiwi": "dist/index.js"
-  },
-  "author": "linhuiw",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/qiphon/kiwi/issues"
-  },
-  "homepage": "https://github.com/qiphon/kiwi#readme",
+  "main": "dist/index.js",
   "dependencies": {
     "@angular/compiler": "^7.2.0",
     "@babel/core": "^7.5.5",
@@ -51,7 +30,25 @@
     "typescript": "4",
     "vue-template-compiler": "^2.6.11"
   },
-  "devDependencies": {
-    "parcel": "^2.6.2"
+  "bin": {
+    "kiwi": "dist/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/qiphon/kiwi/issues"
+  },
+  "description": "a cli for kiwi",
+  "homepage": "https://github.com/qiphon/kiwi#readme",
+  "keywords": [
+    "cli",
+    "kiwi",
+    "i18n"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "dev": "tsc --watch",
+    "kiwi": "node ./dist/index.js --extract ./test.ts ",
+    "kiwiRequest": "node ./dist/index.js --extract ./request.ts --prefix I18N.REQUEST ",
+    "build": "NODE_ENV=development parcel build ./src/index.ts --dist-dir ./dist ",
+    "prepublish": "tsc"
   }
 }
